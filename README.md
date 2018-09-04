@@ -12,3 +12,26 @@ An extended native [Telegram Bot API](https://core.telegram.org/bots/api) in PHP
 ``` bash
 composer require steadfast/telegram-bot-api
 ```
+
+## Client usage
+
+How to send message:
+``` php
+use TelegramBot\Api\BotApi;
+
+$bot = new BotApi($bot_api_token);
+
+$bot->sendMessage($chat_id, $message_text);
+```
+
+## Server usage
+
+``` php
+use TelegramBot\Api\Client;
+
+$bot = new Client($bot_api_token);
+
+$bot->command('ping', function ($message) use ($bot) {
+    $bot->sendMessage($message->getChat()->getId(), 'pong!');
+});
+```
