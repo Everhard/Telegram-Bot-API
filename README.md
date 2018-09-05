@@ -26,6 +26,7 @@ $bot->sendMessage($chat_id, $message_text);
 
 ## Server usage
 
+To handle commands:
 ``` php
 use TelegramBot\Api\Client;
 
@@ -33,5 +34,38 @@ $bot = new Client($bot_api_token);
 
 $bot->command('ping', function ($message) use ($bot) {
     $bot->sendMessage($message->getChat()->getId(), 'pong!');
+});
+```
+
+To handle an event when the bot was added to a group:
+``` php
+use TelegramBot\Api\Client;
+
+$bot = new Client($bot_api_token);
+
+$bot->wasAddedToAGroup(function ($message) use ($bot) {
+    $bot->sendMessage($message->getChat()->getId(), "Let's welcome our new member!");
+});
+```
+
+To handle an event when the bot was removed from a group:
+``` php
+use TelegramBot\Api\Client;
+
+$bot = new Client($bot_api_token);
+
+$bot->wasRemovedFromAGroup(function ($message) use ($bot) {
+    $bot->sendMessage($message->getChat()->getId(), "Say goodbye to our friend!");
+});
+```
+
+To handle any events:
+``` php
+use TelegramBot\Api\Client;
+
+$bot = new Client($bot_api_token);
+
+$bot->on(function ($update) {
+    echo $update->getUpdateId();
 });
 ```

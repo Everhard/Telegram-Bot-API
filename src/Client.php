@@ -69,6 +69,16 @@ class Client
         return $this->on(self::getEditedMessageEvent($action), self::getEditedMessageChecker());
     }
 
+    public function wasAddedToAGroup(Closure $action)
+    {
+        return $this->on(self::getWasAddedToAGroupEvent($action), $this->getWasAddedToAGroupChecker());
+    }
+
+    public function wasRemovedFromAGroup(Closure $action)
+    {
+        return $this->on(self::getWasRemovedFromAGroupEvent($action), $this->getWasRemovedFromAGroupChecker());
+    }
+
     public function callbackQuery(Closure $action)
     {
         return $this->on(self::getCallbackQueryEvent($action), self::getCallbackQueryChecker());
@@ -208,6 +218,32 @@ class Client
 
             $reflectionAction = new ReflectionFunction($action);
             $reflectionAction->invokeArgs([$update->getEditedMessage()]);
+            return false;
+        };
+    }
+
+    protected static function getWasAddedToAGroupEvent(Closure $action)
+    {
+        return function (Update $update) use ($action) {
+            if (!$update->getMessage()) {
+                return true;
+            }
+
+            $reflectionAction = new ReflectionFunction($action);
+            $reflectionAction->invokeArgs([$update->getMessage()]);
+            return false;
+        };
+    }
+
+    protected static function getWasRemovedFromAGroupEvent(Closure $action)
+    {
+        return function (Update $update) use ($action) {
+            if (!$update->getMessage()) {
+                return true;
+            }
+
+            $reflectionAction = new ReflectionFunction($action);
+            $reflectionAction->invokeArgs([$update->getMessage()]);
             return false;
         };
     }
@@ -352,6 +388,40 @@ class Client
     {
         return function (Update $update) {
             return !is_null($update->getEditedMessage());
+        };
+    }
+
+    /**
+     * Returns check function to handling the event when the bot was
+     * added to a group
+     *
+     * @return Closure
+     */
+    protected function getWasAddedToAGroupChecker()
+    {
+        return function (Update $update) {
+            $newChatMember = $update->getMessage()->getNewChatMember();
+            if (is_null($newChatMember)) {
+                return false;
+            }
+            return $newChatMember->getId() == $this->api->getBotId();
+        };
+    }
+
+    /**
+     * Returns check function to handling the event when the bot was
+     * removed from a group
+     *
+     * @return Closure
+     */
+    protected function getWasRemovedFromAGroupChecker()
+    {
+        return function (Update $update) {
+            $leftChatMember = $update->getMessage()->getLeftChatMember();
+            if (is_null($leftChatMember)) {
+                return false;
+            }
+            return $leftChatMember->getId() == $this->api->getBotId();
         };
     }
 
