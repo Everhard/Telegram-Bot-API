@@ -143,6 +143,13 @@ class BotApi
     protected $token;
 
     /**
+     * Bot ID
+     *
+     * @var integer
+     */
+    protected $botId;
+
+    /**
      * Botan tracker
      *
      * @var \TelegramBot\Api\Botan
@@ -177,6 +184,8 @@ class BotApi
         if ($trackerToken) {
             $this->tracker = new Botan($trackerToken);
         }
+
+        list ($this->botId) = explode(":", $token);
     }
 
     /**
@@ -300,6 +309,16 @@ class BotApi
         }
 
         return $json;
+    }
+
+    /**
+     * Use this method to get bot ID
+     *
+     * @return integer
+     */
+    public function getBotId()
+    {
+        return $this->botId;
     }
 
     /**
