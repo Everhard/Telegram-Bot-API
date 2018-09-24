@@ -400,7 +400,8 @@ class Client
     protected function getWasAddedToAGroupChecker()
     {
         return function (Update $update) {
-            if ($message = $update->getMessage() && $newChatMember = $message->getNewChatMember()) {
+            $message = $update->getMessage();
+            if (!is_null($message) && !is_null($newChatMember = $message->getNewChatMember())) {
                 return $newChatMember->getId() == $this->api->getBotId();
             }
             return false;
@@ -416,7 +417,8 @@ class Client
     protected function getWasRemovedFromAGroupChecker()
     {
         return function (Update $update) {
-            if ($message = $update->getMessage() && $leftChatMember = $message->getLeftChatMember()) {
+            $message = $update->getMessage();
+            if (!is_null($message) && !is_null($leftChatMember = $message->getLeftChatMember())) {
                 return $leftChatMember->getId() == $this->api->getBotId();
             }
             return false;
